@@ -9,24 +9,26 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 /**
  * Global singleton configuration bean.
  *
  * @author Thomas Aulich
  */
 public class Configuration {
+    private static final Logger LOG = LogManager.getLogger(Configuration.class);
     private static final String XML_HEADER =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     public static final String XML_CONFIGURATION_FILENAME = "Configuration.xml";
     private static Configuration instance;
     private ConfigurationModel configurationModel = new ConfigurationModel();
     private long lastLoaded;
-    private static final Logger LOG = LogManager.getLogger(Configuration.class);
 
     /**
      * Private constructor follows the singleton-pattern.
      */
     private Configuration() {
+        LOG.debug(this.getClass().getName() + " instantiated");
         reloadConfiguration();
     }
 
@@ -53,7 +55,7 @@ public class Configuration {
             return;
         }
         if (configurationFile.lastModified() > lastLoaded) {
-            LOG.error("reloadConfiguration() now");
+            LOG.debug("reloadConfiguration() now");
             XStream xStream = new XStream();
             xStream.addPermission(NoTypePermission.NONE);
             xStream.addPermission(PrimitiveTypePermission.PRIMITIVES);
@@ -75,11 +77,13 @@ public class Configuration {
         String configPath = System.getProperty("configpath");
         String filePath;
         if (configPath != null && !configPath.isEmpty()) {
+            // LOG.debug("VM Option configpath is " + configPath);
             filePath = configPath + File.separator + XML_CONFIGURATION_FILENAME;
         } else {
+            LOG.warn("VM Option 'configpath' is missing");
             filePath = XML_CONFIGURATION_FILENAME;
         }
-        LOG.debug("Configuration-filename: " + filePath);
+        // LOG.debug("Configuration-filename: " + filePath);
         return new File(filePath);
     }
 
@@ -104,7 +108,7 @@ public class Configuration {
             writer = new OutputStreamWriter(outputStream,
                     StandardCharsets.UTF_8);
             outputStream.write(XML_HEADER.getBytes(StandardCharsets.UTF_8));
-            xStream.toXML(configurationModel, outputStream);
+            xStream.toXML(configurationModel, writer);
             writer.close();
             outputStream.close();
         } catch (Exception exp) {

@@ -3,7 +3,6 @@ package org.aulich.model;
 import com.thoughtworks.xstream.XStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aulich.weatherstation.rest.retrievedata.RetrieveDataResource;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +35,7 @@ public class WiFiMessage {
             writer = new OutputStreamWriter(outputStream,
                     StandardCharsets.UTF_8);
             outputStream.write(XML_HEADER.getBytes(StandardCharsets.UTF_8));
-            xStream.toXML(wiFiMessageModel, outputStream);
+            xStream.toXML(wiFiMessageModel, writer);
             writer.close();
             outputStream.close();
             LOG.debug("Message " + fileNameConfirmed + " saved.");

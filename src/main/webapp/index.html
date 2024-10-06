@@ -1,0 +1,34 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {
+            'packages': ['map'],
+            // Note: you will need to get a mapsApiKey for your project.
+            // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+            'mapsApiKey': 'AIzaSyBOsvINRyjq-MyG-V8c3frTI9zJoMnXYiI'
+
+        });
+        google.charts.setOnLoadCallback(drawMap);
+
+        function drawMap() {
+            var data = google.visualization.arrayToDataTable([
+                ['Lat', 'Long', 'Name'],
+                [51.3990,8.5562,'Zuhause']
+            ]);
+
+            var options = {
+                showTooltip: true,
+                showInfoWindow: true
+            };
+
+            var map = new google.visualization.Map(document.getElementById('chart_div'));
+
+            map.draw(data, options);
+        };
+    </script>
+</head>
+<body>
+<div id="chart_div"></div>
+</body>
+</html>

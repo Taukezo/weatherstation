@@ -5,7 +5,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aulich.model.Configuration;
 import org.aulich.model.MessageEntryModel;
 import org.aulich.model.WiFiMessage;
 import org.aulich.model.WiFiMessageModel;
