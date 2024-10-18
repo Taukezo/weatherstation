@@ -12,6 +12,8 @@ public class ConfigurationTest {
         Configuration.deleteConfigurationFile();
         Configuration cfg = Configuration.getConfiguration();
         ConfigurationModel cfgM = cfg.getConfigurationModel();
+        cfgM.setMapsApiKey("1234");
+        cfgM.setHostAddress("http://localhost:8080/weatherstation");
         cfgM.setBufferPath("C:\\temp\\BufferedData");
         cfgM.setBufferPerformWaitTime(30000);
         cfgM.setPerformedPath("C:\\temp\\PerformedData");

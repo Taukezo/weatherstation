@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch-Test</title>
+
+</head>
+<body>
+<script>
+    fetch("http://localhost:8080/weatherstation/rest/retrievedata/test")
+        .then(response => {
+            if (response.ok) {
+                response.body
+            } else {
+                alert("Fehler!")
+            }
+        }).then (data => alert(data));
+</script>
+</body>
+</html>

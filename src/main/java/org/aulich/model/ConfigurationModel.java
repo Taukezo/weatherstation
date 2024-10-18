@@ -7,6 +7,10 @@ import java.util.List;
 
 @XStreamAlias("configuration")
 public class ConfigurationModel {
+    @XStreamAlias("mapsapikey")
+    private String mapsApiKey = "";
+    @XStreamAlias("hostaddress")
+    private String hostAddress = "";
     @XStreamAlias("datasource")
     private DataSourceModel dataSourceModel = new DataSourceModel();
     @XStreamAlias("bufferpath")
@@ -79,5 +83,21 @@ public class ConfigurationModel {
 
     public void setMeasurementTypes(List<MeasurementTypeModel> measurementTypes) {
         MeasurementTypes = measurementTypes;
+    }
+
+    public String getMapsApiKey() {
+        return mapsApiKey;
+    }
+
+    public void setMapsApiKey(String mapsApiKey) {
+        this.mapsApiKey = mapsApiKey;
+    }
+
+    public String getHostAddress() {
+        return hostAddress;
+    }
+
+    public void setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
     }
 }
