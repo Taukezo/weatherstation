@@ -29,11 +29,12 @@
         // Get stationid from url-parameter
         const urlParams = new URLSearchParams(window.location.search);
         const stationId = urlParams.get('stationid');
-        const measurementTypes=<%=JspInjectorUtil.getMeasurementTypes()%>;
-        console.log(measurementTypes);
-        var endTime = new Date();
-        var startTime = new Date(endTime - 24  * 60 * 60 *
-            1000);
+        const measurementTypes =<%=JspInjectorUtil.getMeasurementTypes()%>;
+        var endTime = getTimeStampValue(new Date());
+        var startTime = getTimeStampValue(new Date(new Date() - 7 * 24 * 60 *
+            60 *
+            1000));
+        var measureType = 'TempOutC';
 
         // Load relevant javascript from Google
         google.charts.load('current', {
@@ -44,8 +45,8 @@
         google.charts.setOnLoadCallback(waitForLoaded);
         fetchData();
         window.onload = function () {
-            setTimeStampValue(document.getElementById("startTime"), startTime);
-            setTimeStampValue(document.getElementById("endTime"), endTime);
+            document.getElementById("startTime").value = startTime;
+            document.getElementById("endTime").value = endTime;
             populateSelect();
         }
 
@@ -55,9 +56,9 @@
 
         async function fetchData() {
             // URL of the JSON data
-            const url = '<%=hostAddress%>/rest/measurementdata/series?' +
-                'stationid=' + stationId + '&to=' + endTime;
-            console.log(url);
+            const url = encodeURI('<%=hostAddress%>/rest/measurementdata/series?' +
+                'stationid=' + stationId + '&starttime=' + startTime +
+                '&endtime=' + endTime + '&measuretype=' + measureType);
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -73,6 +74,10 @@
                     },
                     width: 900,
                     height: 500,
+                    hAxis: {
+                        title: 'Time of day',
+                        format: 'hh:mm a'
+                    },
                     axes: {
                         x: {
                             0: {side: 'top'}
@@ -94,12 +99,16 @@
         }
 
         function setTimeStampValue(element, date) {
+            element.value = getTimeStampValue(date);
+        }
+
+        function getTimeStampValue(date) {
             var isoString = date.toISOString()
-            element.value = isoString.substring(0, (isoString.indexOf("T") | 0) + 6 | 0);
+            return isoString.substring(0, (isoString.indexOf("T") | 0) + 6 | 0);
         }
 
         function populateSelect() {
-            const selectElement = document.getElementById('measurementtype');
+            const selectElement = document.getElementById('measurementType');
             measurementTypes.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.measurementId;
@@ -126,15 +135,25 @@
     <input type="datetime-local" id="startTime"/>
     <label for="endTime">Bis</label>
     <input type="datetime-local" id="endTime"/>
-    <select id="measurementtype">
+    <label for="measurementType">Wertereihe</label>
+    <select id="measurementType">
         <option value="">-- Select an option --</option>
     </select>
-    <input type="submit" value="Anzeigen">
+    <button type="button" onclick="seriesFormSelected()">Aufrufen</button>
 </form>
 <script>
-    function validateSeriesForm() {
+    async function seriesFormSelected() {
         var form = document.selectSeriesForm;
-        return false;
+        startTime = document.getElementById('startTime').value;
+        endTime = document.getElementById('endTime').value;
+        measureType = document.getElementById('measurementType').value;
+        if (measurementType === "") {
+            alert('Wählen Sie bitte eine Wertereihe aus!');
+        } else {
+            console.log('Form-Values: ' + startTime + ' ' + endTime + ' ' +
+                measureType);
+            await fetchData();
+        }
     }
 </script>
 <div id="chart_div" class="full-height"></div>

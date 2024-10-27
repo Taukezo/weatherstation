@@ -13,10 +13,10 @@ import org.aulich.pojo.DataTablePojo;
 import org.aulich.pojo.LinePojo;
 import org.aulich.utilities.AppDataBaseConnectionPool;
 import org.aulich.utilities.JsonTypeConverter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +28,14 @@ public class MeasurementData {
     @GET
     @Path("/series")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataTablePojo getSeries(@QueryParam("stationid") String stationId) {
-        LOG.debug("Querying for station=" + stationId);
+    public DataTablePojo getSeries(@QueryParam("stationid") String stationId,
+                                   @QueryParam("measuretype") String measureType,
+                                   @QueryParam("starttime") String startTime,
+                                   @QueryParam("endtime") String endTime
+    ) {
+
+        LOG.debug("Querying for station=" + stationId + ", measureType=" +
+                measureType + ", starttime=" + startTime + ", endtime=" + endTime);
         Date measureDateFrom = new Date();
         List<ColumnPojo> columns = new ArrayList<>();
         columns.add(new ColumnPojo("1", "Date", "", "date"));
@@ -45,12 +51,13 @@ public class MeasurementData {
                     "      ,[MeasureType]\n" +
                     "      ,[Value]\n" +
                     "  FROM [weatherstation].[dbo].[MeasurementDecimal]\n" +
-                    "  where MeasureType = 'TempOutC' and StationId =?" +
-                    " and MeasureDate >= " +
-                    "'2024-06-09T13:00:00' And MeasureDate <= " +
-                    "'2024-06-09T14:10:00'   order by StationId, MeasureDate " +
+                    "  where StationId =? and MeasureType =?" +
+                    " and MeasureDate >= ? And MeasureDate <= ? order by StationId, MeasureDate " +
                     "\n");
             selStm.setString(1, stationId);
+            selStm.setString(2, measureType);
+            selStm.setTimestamp(3, getTimeStampFromParameter(startTime));
+            selStm.setTimestamp(4, getTimeStampFromParameter(endTime));
             ResultSet rs = selStm.executeQuery();
             // Process the result set
             while (rs.next()) {
@@ -67,5 +74,14 @@ public class MeasurementData {
             throw new RuntimeException(e);
         }
         return new DataTablePojo(columns, lines);
+    }
+
+    private Timestamp getTimeStampFromParameter(String dateParameter) {
+        dateParameter = dateParameter.replace('T', ' ');
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM" +
+                "-dd HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateParameter,
+                formatter);
+        return Timestamp.valueOf(localDateTime);
     }
 }
