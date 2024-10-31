@@ -9,11 +9,15 @@
 <%@ page import="org.aulich.model.Configuration" %>
 <%@ page import="org.aulich.model.ConfigurationModel" %>
 <%@ page import="org.aulich.utilities.JspInjectorUtil" %>
+<%@ page import="java.util.Date" %>
 <%
     ConfigurationModel cfgM =
             Configuration.getConfiguration().getConfigurationModel();
     String apiKey = cfgM.getMapsApiKey();
     String hostAddress = cfgM.getHostAddress();
+    String stationId = request.getParameter("stationid");
+
+
 %>
 <html>
 <head>
@@ -38,7 +42,7 @@
 
         // Load relevant javascript from Google
         google.charts.load('current', {
-            'packages': ['line'],
+            'packages': ['line', 'gauge'],
             'mapsApiKey': "<%=apiKey%>"
         });
 
@@ -48,6 +52,47 @@
             document.getElementById("startTime").value = startTime;
             document.getElementById("endTime").value = endTime;
             populateSelect();
+            var data0 = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Innen °C',
+                    <%=JspInjectorUtil.getActualValue(stationId,"TempInC")%>],
+            ]);
+            var options0 = {
+                width: 400, height: 120,
+                redFrom: 35, redTo: 45,
+                yellowFrom: 25, yellowTo: 35,
+                greenColor: '#58ACFA',
+                greenFrom: -15, greenTo: 0,
+                max: 45,
+                min: -15,
+                minorTicks: 2
+            };
+            var chart0 = new
+            google.visualization.Gauge(document.getElementById('chart_tempinc'));
+            chart0.draw(data0, options0);
+
+            var data1 = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Aussen °C',
+                    <%=JspInjectorUtil.getActualValue(stationId,"TempOutC")%>],
+            ]);
+            var chart1 = new
+            google.visualization.Gauge(document.getElementById('chart_tempoutc'));
+            chart1.draw(data1, options0);
+
+            var data2 = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Luftdruck hpa', <%=JspInjectorUtil.getActualValue(stationId,"AirPressureInHpa")%>],
+            ]);
+            var options2 = {
+                width: 400, height: 120,
+                max: 1100,
+                min: 300,
+                minorTicks: 50
+            };
+            var chart2 = new
+            google.visualization.Gauge(document.getElementById('chart_preassure'));
+            chart2.draw(data2, options2);
         }
 
         function waitForLoaded() {
@@ -56,9 +101,10 @@
 
         async function fetchData() {
             // URL of the JSON data
-            const url = encodeURI('<%=hostAddress%>/rest/measurementdata/series?' +
-                'stationid=' + stationId + '&starttime=' + startTime +
-                '&endtime=' + endTime + '&measuretype=' + measureType);
+            const url =
+                encodeURI('<%=hostAddress%>/rest/measurementdata/series?' +
+                    'stationid=' + stationId + '&starttime=' + startTime +
+                    '&endtime=' + endTime + '&measuretype=' + measureType);
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -68,10 +114,6 @@
                 await waitUntil(() => console.log('Google Charts now loaded!'));
                 data = new google.visualization.DataTable(jsonData);
                 var options = {
-                    chart: {
-                        title: 'Verlauf',
-                        subtitle: '... auf der Zeitachse'
-                    },
                     width: 900,
                     height: 500,
                     hAxis: {
@@ -115,8 +157,22 @@
                 option.text = item.measurementName;
                 selectElement.appendChild(option);
             });
+            selectElement.value = measureType;
         }
 
+        async function seriesFormSelected() {
+            var form = document.selectSeriesForm;
+            startTime = document.getElementById('startTime').value;
+            endTime = document.getElementById('endTime').value;
+            measureType = document.getElementById('measurementType').value;
+            if (measurementType === "") {
+                alert('Wählen Sie bitte eine Wertereihe aus!');
+            } else {
+                console.log('Form-Values: ' + startTime + ' ' + endTime + ' ' +
+                    measureType);
+                await fetchData();
+            }
+        }
     </script>
     <style>
         html, body {
@@ -130,6 +186,26 @@
     </style>
 </head>
 <body>
+<div id="header"><img src="images/wbhlogo.jpeg"
+                      alt="Logo der Hochschule">
+    <h1>Vertiefung Architektur und Gestaltung von Web-Anwendungen</h1></div>
+Letzte Messung an der Station
+'<%=JspInjectorUtil.getStationName(stationId)%>' (Id
+=<%=stationId%>) <%=JspInjectorUtil.getLastMeasureDateFormatted(stationId)%><br/>
+<br/>
+<div id="tempinccomplete">
+    <div id="chart_tempinc"></div>
+    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "TempInC")%>">
+</div>
+<div id="tempoutccomplete">
+    <div id="chart_tempoutc"></div>
+    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "TempOutC")%>">
+</div>
+<div id="preassurecomplete">
+    <div id="chart_preassure"></div>
+    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "AirPressureInHpa")%>">
+</div>
+
 <form name="selectSeriesForm" onsubmit="return validateSeriesForm()">
     <label for="startTime">Von</label>
     <input type="datetime-local" id="startTime"/>
@@ -141,21 +217,6 @@
     </select>
     <button type="button" onclick="seriesFormSelected()">Aufrufen</button>
 </form>
-<script>
-    async function seriesFormSelected() {
-        var form = document.selectSeriesForm;
-        startTime = document.getElementById('startTime').value;
-        endTime = document.getElementById('endTime').value;
-        measureType = document.getElementById('measurementType').value;
-        if (measurementType === "") {
-            alert('Wählen Sie bitte eine Wertereihe aus!');
-        } else {
-            console.log('Form-Values: ' + startTime + ' ' + endTime + ' ' +
-                measureType);
-            await fetchData();
-        }
-    }
-</script>
 <div id="chart_div" class="full-height"></div>
 </body>
 </html>

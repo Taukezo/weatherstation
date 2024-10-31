@@ -71,7 +71,7 @@ public class ConfigurationTest {
         cfgM.getMeasurementTypes().add(new MeasurementTypeModel(DataMapperUtil.MEASURE_HOURLYRAININCH,
                 "Regen pro Stunde [inch]", "", ""));
         cfgM.getMeasurementTypes().add(new MeasurementTypeModel(DataMapperUtil.MEASURE_HOURLYRAINMM,
-                "Regen pro Stunde [inch]",
+                "Regen pro Stunde [mm]",
                 DataMapperUtil.MEASURE_HOURLYRAININCH, DataMapperUtil.DERIVE_INCHINMM));
         cfgM.getMeasurementTypes().add(new MeasurementTypeModel(DataMapperUtil.MEASURE_HUMIDITYOUT,
                 "Luftfeuchte außen [%]", "", ""));
