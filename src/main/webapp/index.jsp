@@ -17,6 +17,8 @@
 <html>
 <head>
     <title>Vertiefungsarbeit WBH - Start</title>
+    <link rel="stylesheet" href="css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
@@ -100,6 +102,15 @@
     </style>
 </head>
 <body>
+<div id="header" class="header row">
+    <img class="col-3" src="images/wbhlogo.jpeg"
+         alt="Logo der Hochschule">
+    <div class="col-9"><h1>Vertiefung Architektur und Gestaltung von
+        Web-Anwendungen</h1></div>
+</div>
+<div id="actualInfoline">
+    <p>Bitte wählen Sie eine Wetterstation aus!</p>
+</div>
 <div id="chart_div" class="full-height"></div>
 </body>
 </html>

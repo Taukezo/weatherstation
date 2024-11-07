@@ -18,7 +18,9 @@
 %>
 <html>
 <head>
-    <title>Vertiefungsarbeit WBH - Start</title>
+    <title>Vertiefungsarbeit WBH - Anzeige Station <%=JspInjectorUtil.getStationName(stationId)%></title>
+    <link rel="stylesheet" href="css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript"
@@ -28,6 +30,7 @@
         var chartsloaded = false;
         var map;
         var data;
+        var options;
         const urlParams = new URLSearchParams(window.location.search);
         const stationId = urlParams.get('stationid');
         const measurementTypes =<%=JspInjectorUtil.getMeasurementTypes()%>;
@@ -55,41 +58,76 @@
             populateSelect();
             populateActualStatus();
         }
+        window.onresize = function () {
+            map = new
+            google.charts.Line(document.getElementById('chart_div'));
+            map.draw(data, options);
+        };
+
     </script>
 </head>
 <body>
-<div id="header"><img src="images/wbhlogo.jpeg"
-                      alt="Logo der Hochschule">
-    <h1>Vertiefung Architektur und Gestaltung von Web-Anwendungen</h1></div>
-Letzte Messung an der Station
-'<%=JspInjectorUtil.getStationName(stationId)%>' (Id
-=<%=stationId%>) <%=JspInjectorUtil.getLastMeasureDateFormatted(stationId)%>
-<br/>
-<br/>
-<div id="tempinccomplete">
-    <div id="chart_tempinc"></div>
-    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "TempInC")%>">
+<div id="header" class="header row">
+    <img class="col-3" src="images/wbhlogo.jpeg"
+         alt="Logo der Hochschule">
+    <div class="col-9"><h1>Vertiefung Architektur und Gestaltung von
+        Web-Anwendungen</h1></div>
 </div>
-<div id="tempoutccomplete">
-    <div id="chart_tempoutc"></div>
-    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "TempOutC")%>">
+<div id="actualInfoline">
+    <p>Station
+        '<%=JspInjectorUtil.getStationName(stationId)%>'
+        gemessen <%=JspInjectorUtil.getLastMeasureDateFormatted(stationId)%>
+    </p>
 </div>
-<div id="preassurecomplete">
-    <div id="chart_preassure"></div>
-    <img src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "AirPressureInHpa")%>">
+<div id="actualInstruments" class="row">
+    <div class="col-1">
+        <img class="trend" src="<%=JspInjectorUtil.getTrendImageUrl(stationId,
+        "TempInC")%>" alt=""/>
+    </div>
+    <div class="instrument col-3">
+        <div id="chart_tempinc"></div>
+    </div>
+    <div class="col-1">
+        <img class="trend"
+             src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "TempOutC")%>"
+             alt=""/>
+    </div>
+    <div class="instrument col-3">
+        <div id="chart_tempoutc"></div>
+    </div>
+    <div class="col-1">
+        <img class="trend"
+             src="<%=JspInjectorUtil.getTrendImageUrl(stationId, "AirPressureInHpa")%>"
+             alt=""/>
+    </div>
+    <div class="instrument col-3">
+        <div id="chart_preassure"></div>
+    </div>
+</div>
+<form name="selectSeriesForm" class="row">
+    <div class="instrument col-3">
+        <label for="startTime">Von</label>
+        <input type="datetime-local" id="startTime"/>
+    </div>
+    <div class="instrument col-3">
+        <label for="endTime">Bis</label>
+        <input type="datetime-local" id="endTime"/>
+    </div>
+    <div class="instrument col-3">
+        <label for="measurementType">Wertereihe</label>
+        <select id="measurementType">
+            <option value="">-- Select an option --</option>
+        </select>
+    </div>
+    <div class="instrument col-3">
+        <label>Neu aufbauen</label>
+        <button type="button" onclick="seriesFormSelected()">Aktualisieren
+        </button>
+    </div>
+</form>
+<div class="row">
+    <div id="chart_div" class="col-12"></div>
 </div>
 
-<form name="selectSeriesForm" onsubmit="return validateSeriesForm()">
-    <label for="startTime">Von</label>
-    <input type="datetime-local" id="startTime"/>
-    <label for="endTime">Bis</label>
-    <input type="datetime-local" id="endTime"/>
-    <label for="measurementType">Wertereihe</label>
-    <select id="measurementType">
-        <option value="">-- Select an option --</option>
-    </select>
-    <button type="button" onclick="seriesFormSelected()">Aufrufen</button>
-</form>
-<div id="chart_div" class="full-height"></div>
 </body>
 </html>

@@ -16,8 +16,7 @@ async function fetchData() {
         const jsonData = await response.json();
         await waitUntil(() => console.log('Google Charts now loaded!'));
         data = new google.visualization.DataTable(jsonData);
-        var options = {
-            width: 900,
+        options = {
             height: 500,
             hAxis: {
                 title: 'Time of day',
@@ -69,7 +68,6 @@ function populateActualStatus() {
         ['Innen °C', actTempInC],
 ]);
     var options0 = {
-        width: 400, height: 120,
         redFrom: 35, redTo: 45,
         yellowFrom: 25, yellowTo: 35,
         greenColor: '#58ACFA',
@@ -96,7 +94,6 @@ function populateActualStatus() {
         ['Luftdruck hpa', actAirPressureInHpa],
 ]);
     var options2 = {
-        width: 400, height: 120,
         max: 1100,
         min: 300,
         minorTicks: 50
