@@ -70,7 +70,7 @@ public class JspInjectorUtil {
                     "      ,avg(Value) as Value\n" +
                     "  FROM MeasurementDecimal\n" +
                     "  where abs(datediff(day, getutcdate(),MeasureDate)) < " +
-                    "2\n" +
+                    "3\n" +
                     "  and StationId = ?\n" +
                     "  and MeasureType = ?\n" +
                     "    group by stationId, year(MeasureDate), month(MeasureDate), day(MeasureDate), MeasureType\n" +

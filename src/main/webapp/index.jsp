@@ -90,16 +90,6 @@
             }
         }
     </script>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        .full-height {
-            height: 100%;
-        }
-    </style>
 </head>
 <body>
 <div id="header" class="header row">
@@ -111,6 +101,7 @@
 <div id="actualInfoline">
     <p>Bitte wählen Sie eine Wetterstation aus!</p>
 </div>
-<div id="chart_div" class="full-height"></div>
+<div id="chart_div" class="mapsstyle"></div>
+<!-- <div id="chart_div"></div> -->
 </body>
 </html>

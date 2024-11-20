@@ -109,6 +109,10 @@ input:hover, select:hover, button:hover {
     margin-right: auto;
     width: 80%;
 }
+.mapsstyle {
+    width: 90vw;
+    height: 60%;
+}
 #actualInfoline {
     text-align: center;
 }
